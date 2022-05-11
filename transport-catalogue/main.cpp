@@ -1,24 +1,23 @@
 #include <iostream>
 #include "input_reader.h"
 #include "transport_catalogue.h"
+#include "stat_reader.h"
 #include <vector>
 #include <string>
 
 
-using namespace TransportCatalogy;
+using namespace TransportsCatalogue;
 int main(){
+    detail::outPrint::StatReader Print;
+    Requests bus_request;
+    TransportCatalogue transport_catalogue;
+    bus_request=detail::Request(std::cin,std::move(transport_catalogue));
 
-    std::vector<std::pair<std::string,bool>> bus_request;
-
-    detail::outPrint::StatReader stats(std::cout);
-    TransportCatalogue A(stats);
-    detail::Request(std::cin,std::move(A),bus_request);
-    for(auto & str : bus_request ){
+    for(auto & str : bus_request.requests ){
         if(str.second)
-             A.GetBusInfo(str.first);
+             Print.PrintStats(str.first,std::cout,transport_catalogue);
           else
-             A.GetStopInfo(str.first);
-
+             Print.PrintBus(str.first,std::cout,transport_catalogue);
     }
     return 0;
 }

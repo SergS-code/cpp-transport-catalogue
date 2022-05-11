@@ -7,18 +7,18 @@
 #include <tuple>
 #include <map>
 #include "transport_catalogue.h"
-namespace TransportCatalogy {
+namespace TransportsCatalogue {
 namespace detail {
 
-void AddComplitTraffic(std::vector<std::string> &bus_stop);
-Bus FillingBusTrafic(std::string str,TransportCatalogue &A);
-void FillingStopsWithBus(std::string str,TransportCatalogue &A);
-Stop FillingBusStop (std::string str);
-void Prepair(std::string& str);
-void Request(std::istream& input, TransportCatalogue &&A, std::vector<std::pair<std::string, bool> > &bus_request);
-void Prepair_zapros(std::istream &input,std::vector<std::pair<std::string,bool>>& bus_request);
-void Prepair_Spravochnick( TransportCatalogue &&A,std::vector<std::string>&list_input_bus);
-void Prepair_Distance(TransportCatalogue &A, std::vector<std::string>&list_input_bus);
-void Parsing_distanc_substr(std::string& dist, double &Dist,std::string& name_to);
+    void AddComplitTraffic(std::vector<std::string> &bus_stop);
+    Bus ParseBus(std::string str,TransportCatalogue &transport_catalogue);
+    void ParseStopsWithBus(std::string str,TransportCatalogue &transport_catalogue);
+    Stop ParseBusStop (std::string str);
+    void RemovingSpaces(std::string& str);
+    Requests Request(std::istream& input, TransportCatalogue &&transport_catalogue);
+    void PrepareRequests(std::istream &input, Requests& request);
+    void PrepareCatalogue(TransportCatalogue &&transport_catalogue,std::vector<std::string>&list_input_bus);
+    void PrepareDistance(TransportCatalogue &transport_catalogue, std::vector<std::string>&list_input_bus);
+    void Parsing_distanc_substr(std::string& dist, double &Dist,std::string& name_to);
 }
 }

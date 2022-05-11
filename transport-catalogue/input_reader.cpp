@@ -2,22 +2,19 @@
 
 using namespace std;
 
-namespace TransportCatalogy {
+namespace TransportsCatalogue {
 namespace detail {
-void  Request(std::istream &input, TransportCatalogue &&A,   std::vector<std::pair<std::string,bool>>& bus_request )
+Requests  Request(std::istream &input, TransportCatalogue && transport_catalogue )
 {
-
+    Requests bus_request;
     string str;
     vector<string> list_input_bus;
     vector<string> list_input_stop;
-
-
     getline(input, str);
     int size_zapros=std::stoi(str);
     int breaking_i=0;
 
     while(input){
-
         if(breaking_i==size_zapros){
             break;
         }
@@ -32,8 +29,8 @@ void  Request(std::istream &input, TransportCatalogue &&A,   std::vector<std::pa
                 if(first=="Stop"s){
                     int t=i;
                     ++t;
-                    rez=FillingBusStop(str.substr(t,str.size()));
-                    A.GetStops()->push_back(move(rez));
+                    rez=ParseBusStop(str.substr(t,str.size()));
+                    transport_catalogue.GetStops()->push_back(move(rez));
                     list_input_stop.push_back(str.substr(t,str.size()));
                     break;
                 }
@@ -43,29 +40,21 @@ void  Request(std::istream &input, TransportCatalogue &&A,   std::vector<std::pa
                     ++t;
                     list_input_bus.push_back(str.substr(t,str.size()));
                     break;
-
                 }
             }
         }
         breaking_i++;
-
     }
-
-
-
-    Prepair_Spravochnick(move(A),list_input_bus);
-    Prepair_Distance(A,list_input_stop);
-    Prepair_zapros(input,bus_request);
-
-
-
+    PrepareCatalogue(move(transport_catalogue),list_input_bus);
+    PrepareDistance(transport_catalogue,list_input_stop);
+    PrepareRequests(input,bus_request);
+    return bus_request;
 }
 
-void Prepair_Distance( TransportCatalogue &A,std::vector<std::string>&list_input_stop){
+void PrepareDistance(TransportCatalogue &transport_catalogue,std::vector<std::string>&list_input_stop){
 
     std::vector<std::string> to;
     std::unordered_map<string,std:: vector<std::string>> buss ;
-
     double Distance=0;
     for (auto &str:list_input_stop){
         string name;
@@ -79,21 +68,19 @@ void Prepair_Distance( TransportCatalogue &A,std::vector<std::string>&list_input
                 break;
             }
         }
-
         int firs_zap=0;
         size_t dolg_size=0;
         for(size_t i=name_size;i<str.size();++i ){
             if(str[i]==','){
                 ++firs_zap;
             }
-            dolg_size=i;                     //!!!!!!!!!!!!!
+            dolg_size=i;
             if(firs_zap==2)
                 break;
-
         }
 
         std::string dist;
-        for(size_t i=++dolg_size;i<str.size();++i ){///!!!!!!!
+        for(size_t i=++dolg_size;i<str.size();++i ){
 
             if((str[i]==',')||(i==str.size()-1)){
                 if(str[i]!=',')
@@ -104,10 +91,10 @@ void Prepair_Distance( TransportCatalogue &A,std::vector<std::string>&list_input
                 Parsing_distanc_substr(dist,Distance,name_to);
                 dist="";
 
-                if(A.get_stopname_to_stop()->count(name)!=0 && A.get_stopname_to_stop()->count(name_to)!=0 ){
-                    Stop *a=A.get_stopname_to_stop()->at(name);
-                    Stop *b=A.get_stopname_to_stop()->at(name_to);
-                    A.SetDistance(a,b,Distance);
+                if(transport_catalogue.get_stopname_to_stop()->count(name)!=0 && transport_catalogue.get_stopname_to_stop()->count(name_to)!=0 ){
+                    Stop *a=transport_catalogue.get_stopname_to_stop()->at(name);
+                    Stop *b=transport_catalogue.get_stopname_to_stop()->at(name_to);
+                    transport_catalogue.SetDistance(a,b,Distance);
                 }
             }
             else{
@@ -115,13 +102,9 @@ void Prepair_Distance( TransportCatalogue &A,std::vector<std::string>&list_input
             }
         }
     }
-
-
-
 }
 
 void Parsing_distanc_substr(std::string& dist,double& Dist,std::string& name_to){
-
 
     std::string distan;
     size_t size_dist=0;
@@ -151,30 +134,24 @@ void Parsing_distanc_substr(std::string& dist,double& Dist,std::string& name_to)
     std::string bus_name;
     for( size_t i=size_skip+size_dist;i<dist.size();++i){
         bus_name+=dist[i];
-
     }
-    Prepair(bus_name);
+    RemovingSpaces(bus_name);
     name_to=bus_name;
-
 }
-
-
-void Prepair_Spravochnick( TransportCatalogue &&A,std::vector<std::string>&list_input_bus){
-    A.AddStop();
+void PrepareCatalogue(TransportCatalogue &&transport_catalogue, std::vector<std::string>&list_input_bus){
+    transport_catalogue.PrepareStops();
 
     for (auto &str:list_input_bus){
-        A.GetBuses()->push_back(FillingBusTrafic(str,A));
+        transport_catalogue.GetBuses()->push_back(ParseBus(str,transport_catalogue));
     }
-
-    A.AddBus();
+    transport_catalogue.PrepareBus();
 
     for (auto &str:list_input_bus){
-        FillingStopsWithBus(str,A);
+        ParseStopsWithBus(str,transport_catalogue);
     }
-
 }
 
-void Prepair_zapros(std::istream &input,std::vector<std::pair<std::string,bool>>& bus_request){
+void PrepareRequests(std::istream &input, Requests &bus_request){
 
     string str;
     getline(input, str);
@@ -193,18 +170,17 @@ void Prepair_zapros(std::istream &input,std::vector<std::pair<std::string,bool>>
                     int t=i;
                     ++t;
                     string stt=str.substr(t,str.size());
-                    Prepair(stt);
-                    bus_request.push_back({move(stt),1});
+                    RemovingSpaces(stt);
+                    bus_request.requests.push_back({move(stt),1});
                     break;
-
                 }
 
                 if(first=="Stop"s){
                     int t=i;
                     ++t;
                     string stt=str.substr(t,str.size());
-                    Prepair(stt);
-                    bus_request.push_back({move(stt),0});
+                    RemovingSpaces(stt);
+                    bus_request.requests.push_back({move(stt),0});
                     break;
 
                 }
@@ -215,10 +191,9 @@ void Prepair_zapros(std::istream &input,std::vector<std::pair<std::string,bool>>
             break;
         }
     }
-
 }
 
-Stop FillingBusStop(string str)
+Stop ParseBusStop(string str)
 {
     Stop A;
     string name;
@@ -254,13 +229,12 @@ Stop FillingBusStop(string str)
         }
     }
     A.longitude=std::atof(dolgota.c_str());
-
     return A;
 }
-Bus FillingBusTrafic(string str,TransportCatalogue &A)
+
+Bus ParseBus(string str,TransportCatalogue &transport_catalogue)
 {
     Bus temp;
-
     bool type=false;
     for( auto & c:str){
         if(c=='>'){
@@ -268,12 +242,9 @@ Bus FillingBusTrafic(string str,TransportCatalogue &A)
             break;
         }
     }
-
     string nomer_bus;
     size_t nomer=0;
     vector<string> bus_stop;
-
-
     for (size_t i=0;i<str.size();++i){
 
         if(str[i]==':'){
@@ -281,8 +252,7 @@ Bus FillingBusTrafic(string str,TransportCatalogue &A)
             break;}
         nomer_bus+=str[i];
     }
-    Prepair(nomer_bus);
-
+    RemovingSpaces(nomer_bus);
     temp.name=nomer_bus;
 
     if(type){
@@ -295,11 +265,10 @@ Bus FillingBusTrafic(string str,TransportCatalogue &A)
             }
             if(i==str.size()-1 || str[i]=='>')
             {
-                Prepair(cur_bus);
+                RemovingSpaces(cur_bus);
                 bus_stop.push_back(cur_bus);
                 cur_bus="";
             }
-
         }
     }else{
         string cur_bus;
@@ -311,13 +280,10 @@ Bus FillingBusTrafic(string str,TransportCatalogue &A)
             }
             if(i==str.size()-1 || str[i]=='-')
             {
-                Prepair(cur_bus);
+                RemovingSpaces(cur_bus);
                 bus_stop.push_back(cur_bus);
                 cur_bus="";
-
-
             }
-
         }
         AddComplitTraffic(bus_stop);
     }
@@ -325,21 +291,19 @@ Bus FillingBusTrafic(string str,TransportCatalogue &A)
     for (auto &str:bus_stop){
         Stop* stop;
 
-        if(A.get_stopname_to_stop()->count(str)!=0){
-            stop=A.get_stopname_to_stop()->at(str);
+        if(transport_catalogue.get_stopname_to_stop()->count(str)!=0){
+            stop=transport_catalogue.get_stopname_to_stop()->at(str);
             temp.busStop.push_back(stop);
         }
 
     }
-
     return temp;
 }
-void FillingStopsWithBus(string str,TransportCatalogue &A)
+void ParseStopsWithBus(string str,TransportCatalogue &transport_catalogue)
 {
     string nomer_bus;
     size_t nomer=0;
     vector<string> bus_stop;
-
     for (size_t i=0;i<str.size();++i){
 
         if(str[i]==':'){
@@ -347,8 +311,7 @@ void FillingStopsWithBus(string str,TransportCatalogue &A)
             break;}
         nomer_bus+=str[i];
     }
-    Prepair(nomer_bus);
-
+    RemovingSpaces(nomer_bus);
     string cur_stop;
     for (size_t i=++nomer;i<str.size();++i){
 
@@ -358,40 +321,34 @@ void FillingStopsWithBus(string str,TransportCatalogue &A)
         }
         if(i==str.size()-1 || str[i]=='>' || str[i]=='-')
         {
-            Prepair(cur_stop);
+            RemovingSpaces(cur_stop);
             bus_stop.push_back(cur_stop);
             cur_stop="";
         }
-
     }
 
     for (auto &str:bus_stop){
         Stop* stop;
 
-        if(A.get_stopname_to_stop()->count(str)!=0){
-            stop=A.get_stopname_to_stop()->at(str);
-            if(A.get_busname_to_bus()->count(nomer_bus)!=0){
-                A.get_stop_wiht_bus()->operator[](stop).insert(A.get_busname_to_bus()->at(nomer_bus)->name);
-
+        if(transport_catalogue.get_stopname_to_stop()->count(str)!=0){
+            stop=transport_catalogue.get_stopname_to_stop()->at(str);
+            if(transport_catalogue.get_busname_to_bus()->count(nomer_bus)!=0){
+                transport_catalogue.get_stop_wiht_bus()->operator[](stop).insert(transport_catalogue.get_busname_to_bus()->at(nomer_bus)->name);
             }
         }
-
     }
 
 }
 
-void Prepair(string& str){
-
+void RemovingSpaces(string& str){
     size_t pref=0;
     size_t suff=str.size();
-
     for(size_t i=0;i<str.size();++i){
         if(str[i]!=' '){
             pref=i;
             break;
         }
     }
-
 
     for(int i=str.size()-1;i>=0;--i){
         if(str[i]!=' '){
@@ -404,14 +361,10 @@ void Prepair(string& str){
 }
 
 void AddComplitTraffic(vector<string>& bus_stop){
-
     vector<string> copy=bus_stop;
     for (int i=copy.size()-2; i>=0; --i){
         bus_stop.push_back(copy[i]);
-
     }
-
-
 }
 }
 }
