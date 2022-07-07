@@ -6,54 +6,9 @@
 #include "geo.h"
 #include <unordered_set>
 #include <set>
+#include "domain.h"
 
 namespace TransportsCatalogue {
-
-struct Stop{
-    std::string name;
-    double latitude;
-    double longitude;
-};
-
-struct InfoToPrintStop{
-    std::vector<std::string_view> buss;
-    bool stop_exist=false;
-};
-
-struct StopToStop{
-    StopToStop(Stop*A,Stop*B)
-    {
-        AtoB.first=A;
-        AtoB.second=B;
-    }
-    bool operator==(StopToStop A)const{
-        return AtoB==A.AtoB;
-    }
-    bool operator!=(StopToStop A)const{
-        return AtoB!=A.AtoB;
-    }
-    std::pair<Stop*,Stop*>AtoB;
-
-};
-
-struct Stats {
-    Stats() = default;
-    int stops{};
-    int unique_stops{};
-    double route_length{};
-    double route_length2{};
-
-};
-struct Requests{
-    std::vector<std::pair<std::string,bool>> requests;
-};
-
-
-struct Bus{
-    std::string name;
-    std::vector<Stop*>busStop;
-};
-
 
 class TransportCatalogueHasher{
 public:
@@ -62,10 +17,11 @@ private:
     std::hash<const void*> hasher_;
 };
 
-class TransportCatalogue {
 
+
+class TransportCatalogue {
 public:
-    TransportCatalogue ();
+    TransportCatalogue();
     std::deque<Stop>* GetStops();
     std::deque<Bus>* GetBuses();
     std::unordered_map<std::string_view,Stop*> *get_stopname_to_stop();
@@ -74,15 +30,22 @@ public:
     std::unordered_map<const StopToStop,double,TransportCatalogueHasher> *get_stop_distance();
 
     void PrepareStops();
+    void PrepareDistance();
     void PrepareBus();
+    void PrepareStopsWithBus();
+
     void AddStop(Stop &stop);
     void AddBus(Bus &bus);
+
     Stop* FindStop(std::string name);
     Bus* FindBus(std::string name);
+
     Stats GetBusInfo(std::string name);
     InfoToPrintStop GetStopInfo(std::string_view name);
-    void SetDistance(Stop*A,Stop*B,double distant);
     double GetDistance(Stop*A,Stop*B);
+
+    void SetDistance(Stop*A,Stop*B,double distant);
+
 
 private:
     std::deque<Stop> stops;
@@ -93,4 +56,5 @@ private:
     std::unordered_map<const StopToStop,double,TransportCatalogueHasher> stop_distance;
 
 };
+
 }
