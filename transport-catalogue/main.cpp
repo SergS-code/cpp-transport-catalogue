@@ -19,7 +19,7 @@ int main(){
     TransportsCatalogue::renderer::MapRenderer Map(A);
     Map.SetMapSetting(GetInf);
     GetInf.GetCatalog(A);
-    GetInf.PrepairJson(std::cin);
+    GetInf.PrepareJson(std::cin);
     TransportsCatalogue::RequestHandler Manager(Map,GetInf,A);
     Manager.OutputResult();
     return 0;

@@ -94,27 +94,19 @@ class MapRenderer{
 public:
     MapRenderer(TransportCatalogue &db);
     void SetMapSetting(JsonReader &MapSer_);
-    void FillingPolyline(svg::Polyline &Marshrut, JsonReader *MapSet, int clolorPaletIndex, std::string &color);
-    svg::Document GetMap();
-    void FillingText(svg::Document& doc, std::deque<Bus>& orderBus, const TransportsCatalogue::Plane::SphereProjector& proj);
-    void FillingCircle(std::vector<Stop>&stops, svg::Document &doc, const Plane::SphereProjector &proj) const ;
+    void FillPolyline(svg::Polyline &Marshrut, JsonReader *MapSet, int clolorPaletIndex, std::string &color);
+    std::string GetMap();
+    void FillText(svg::Document& doc, std::deque<Bus>& orderBus, const TransportsCatalogue::Plane::SphereProjector& proj);
+    void FillCircle(std::vector<Stop>&stops, svg::Document &doc, const Plane::SphereProjector &proj) const ;
     std::string GetColor(MapSetting settings);
     void  PrepareText(svg::Text &temp, bool zaliv,std::string busName,std::string color,const MapSetting& tempSetting);
     void  PrepareTextCoordinatsRing(svg::Text &temp, const Bus& bus, const Plane::SphereProjector &proj);
     bool  FindDuplicate(Stop item, std::vector<Stop> &stops)const;
     void  PrepareTextCoordinatsNotRing(svg::Text &temp, const Bus& bus, const Plane::SphereProjector &proj, int lastStop, int stop_num);
     void  MainPrepareText(svg::Text &temp, svg::Document &doc, bool zalivka, bool ring,const Bus &bus, const Plane::SphereProjector &proj,const MapSetting& tempSetting);
-    void  FillingTextStop(std::vector<Stop>&stops, svg::Document &doc, const Plane::SphereProjector &proj);
-    void  PrepareTextStop(svg::Text &temp, bool zaliv,std::string busName,std::string color,const MapSetting& tempSetting,const Stop stop,const Plane::SphereProjector &proj);
-    void  PrintMap(std::string& str);
-    // Возвращает информацию о маршруте (запрос Bus)
-   // std::optional<BusStat> GetBusStat(const std::string_view& bus_name) const;
-
-    // Возвращает маршруты, проходящие через
-   // const std::unordered_set<BusPtr>* GetBusesByStop(const std::string_view& stop_name) const;
-
-    // Этот метод будет нужен в следующей части итогового проекта
-  //  svg::Document RenderMap() const;
+    void  FillTextStop(std::vector<Stop>&stops, svg::Document &doc, const Plane::SphereProjector &proj);
+    void  PrepareTextStop(svg::Text &temp, bool zaliv,const std::string& busName,const std::string& color,const MapSetting& tempSetting,const Stop stop,const Plane::SphereProjector &proj);
+    std::string PrintMap(std::string& str);
 
 private:
     // RequestHandler использует агрегацию объектов "Транспортный Справочник" и "Визуализатор Карты"

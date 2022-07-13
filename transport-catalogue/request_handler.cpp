@@ -10,34 +10,75 @@ TransportsCatalogue::RequestHandler::RequestHandler(renderer::MapRenderer &Rende
 
 void TransportsCatalogue::RequestHandler::OutputResult()
 {
-
-    int i=0;
+    json::Array arr;
     if(Requests_.GetReqInf().size()!=0)
     {
-        std::cout<<"["<<std::endl;
-
         for(auto& item: Requests_.GetReqInf())
         {
-            if(i>0){std::cout<<","<<std::endl;;}
-            ++i;
             if(item.type=="Map"){
-                std::cout<<"    {"<<endl;
-
-                std::cout<<"        \""<<"map"<<"\": "<<"\"";
-                Renderer_.GetMap();
-                std::cout<<"\","<<std::endl;
-                std::cout<<"        \""<<"request_id"<<"\": "<<std::to_string(item.id)<<endl;
-                std::cout<<"    }";
-
+                json::Dict tem;
+                tem["map"]=Renderer_.GetMap();
+                tem["request_id"]=item.id;
+                arr.push_back(tem);
             }
-
             if(item.type=="Stop"){
-                Requests_.PrintInfoStop(Catalogue_.GetStopInfo(item.name),std::to_string(item.id));
+                InfoToPrintStop temp_info=Catalogue_.GetStopInfo(item.name);
+                if(temp_info.stop_exist){
+                    json::Dict tem;
+                    json::Array busss;
+                    for(auto& it:temp_info.buss){
+                        busss.push_back(string(it));
+                    }
+                    tem["buses"]=busss;
+                    tem["request_id"]=item.id;
+                    arr.push_back(tem);
+
+                }else{
+                    json::Dict tem;
+                    tem["request_id"]=item.id;
+                    tem["error_message"]="not found";
+                    arr.push_back(tem);
+                }
+
             }
             if(item.type=="Bus"){
-                Requests_.PrintInfoBus(Catalogue_.GetBusInfo(item.name),std::to_string((item.id)));
+                Stats temp_info=Catalogue_.GetBusInfo(item.name);
+                if(temp_info.route_length==0 && temp_info.route_length2==0 && temp_info.stops==0 && temp_info.unique_stops==0){
+                    json::Dict tem;
+                    tem["request_id"]=item.id;
+                    tem["error_message"]="not found";
+                    arr.push_back(tem);
+
+                }else{
+                    json::Dict tem;
+                    tem["curvature"]=temp_info.route_length2;
+                    tem["request_id"]=item.id;
+                    tem["route_length"]=temp_info.route_length;
+                    tem["stop_count"]=temp_info.stops;
+                    tem["unique_stop_count"]=temp_info.unique_stops;
+                    arr.push_back(tem);
+
+                }
+
             }
         }
-        std::cout<<std::endl<<"]";
+        json::Print(
+                    json::Document{
+                        // Форматирование не имеет формального значения:
+                        // это просто цепочка вызовов методов
+                        json::Builder{}.Value(arr).Build()
+                    },
+                    cout
+                    );
+
     }
+
+
 }
+
+
+
+
+
+
+

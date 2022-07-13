@@ -12,6 +12,7 @@
 #include <limits>
 #include <iomanip>
 #include <fstream>
+#include "json_builder.h"
 
 
 namespace TransportsCatalogue {

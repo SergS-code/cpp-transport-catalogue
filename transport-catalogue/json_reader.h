@@ -11,13 +11,13 @@ class JsonReader{
 public:
     JsonReader(){
     }
-    void PrepairJson(std::istream &streamDate);
+    void PrepareJson(std::istream &streamDate);
     void GetCatalog(TransportCatalogue& primary);
     void GetInfoBus(const json::Node &Businf);
     void GetInfoStop(const json::Node &Stop);
     void GetReqInf(const json::Node &ReqItem);
     void GetMapInfo(const json::Node &MapItem);
-    void FillingCatalogy();
+    void FillCatalogy();
     MapSetting &GetSetting();
 
     void PrintInfoStop(InfoToPrintStop item,std::string request_id);

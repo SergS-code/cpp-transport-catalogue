@@ -7,10 +7,10 @@
  */
 namespace TransportsCatalogue{
 
-void JsonReader::PrepairJson(std::istream &streamDate)
+void JsonReader::PrepareJson(std::istream &streamDate)
 {
     Doc=json::Load(streamDate);
-    FillingCatalogy();
+    FillCatalogy();
 }
 
 void JsonReader::GetCatalog(TransportCatalogue &primary)
@@ -157,9 +157,9 @@ void JsonReader::GetMapInfo(const json::Node &MapItem)
 
 }
 
-void JsonReader::FillingCatalogy()
+void JsonReader::FillCatalogy()
 {
-    json:: NodeJson temp= Doc.GetRoot().GetData();
+   // json::Node::Value temp= Doc.GetRoot().GetValue();
     json::Dict inf=Doc.GetRoot().AsMap();
     std::vector<json::Node>requestBus;
     for(auto &a : inf){

@@ -15,7 +15,7 @@ void MapRenderer::SetMapSetting(JsonReader &MapSet_)
     MapSet=&MapSet_;
 }
 
-void MapRenderer::FillingPolyline(svg::Polyline &Marshrut, TransportsCatalogue::JsonReader *MapSet, int clolorPaletIndex,string &color)
+void MapRenderer::FillPolyline(svg::Polyline &Marshrut, TransportsCatalogue::JsonReader *MapSet, int clolorPaletIndex,string &color)
 {
     MapSetting tempSet=MapSet->GetSetting();
     Marshrut.GetFill()="none";
@@ -62,7 +62,7 @@ void MapRenderer::FillingPolyline(svg::Polyline &Marshrut, TransportsCatalogue::
 
 }
 
-svg::Document MapRenderer::GetMap()
+std::string MapRenderer::GetMap()
 {
     MapSetting tempSetting=MapSet->GetSetting();
     const double WIDTH = tempSetting.width;
@@ -115,7 +115,7 @@ svg::Document MapRenderer::GetMap()
     for (auto & bus: orderBus){
         svg::Polyline Marshrut;
         string color;
-        FillingPolyline(Marshrut,MapSet,clolorPaletIndex%tempSetting.color_palette.size(),color);
+        FillPolyline(Marshrut,MapSet,clolorPaletIndex%tempSetting.color_palette.size(),color);
         busWithColor[bus.name]=color;
         bool dontAdd=true;
         for(auto &stop: bus.busStop){
@@ -130,9 +130,9 @@ svg::Document MapRenderer::GetMap()
         ++clolorPaletIndex;
     }
 
-    FillingText(doc,orderBus,proj);
-    FillingCircle(stops,doc,proj);
-    FillingTextStop(stops,doc,proj);
+    FillText(doc,orderBus,proj);
+    FillCircle(stops,doc,proj);
+    FillTextStop(stops,doc,proj);
 
     geo_coords.clear();
 
@@ -143,10 +143,10 @@ svg::Document MapRenderer::GetMap()
     str += strs.str();
     PrintMap(str);
 
-    return doc;
+    return PrintMap(str);
 }
 
-void MapRenderer::FillingTextStop(std::vector<Stop>&stops, svg::Document &doc,const Plane::SphereProjector &proj)
+void MapRenderer::FillTextStop(std::vector<Stop>&stops, svg::Document &doc,const Plane::SphereProjector &proj)
 {
     svg::Text text_1,text_2;
     for(auto& stop:stops){
@@ -159,7 +159,7 @@ void MapRenderer::FillingTextStop(std::vector<Stop>&stops, svg::Document &doc,co
     }
 
 }
-void MapRenderer::FillingText(svg::Document &doc, std::deque<Bus> &orderBus, const Plane::SphereProjector &proj)
+void MapRenderer::FillText(svg::Document &doc, std::deque<Bus> &orderBus, const Plane::SphereProjector &proj)
 {
     MapSetting tempSetting=MapSet->GetSetting();
     for (auto& bus: orderBus){ // true и false обозначает разницу подложка это или  надпись . вторая bool Ring or not
@@ -183,7 +183,7 @@ void MapRenderer::FillingText(svg::Document &doc, std::deque<Bus> &orderBus, con
         }
     }
 }
-void MapRenderer::FillingCircle(std::vector<Stop>&stops, svg::Document &doc,  const Plane::SphereProjector &proj)const
+void MapRenderer::FillCircle(std::vector<Stop>&stops, svg::Document &doc,  const Plane::SphereProjector &proj)const
 {
     MapSetting tempSetting=MapSet->GetSetting();
     for(auto& stop :stops){
@@ -250,7 +250,7 @@ void MapRenderer::PrepareText(svg::Text &temp, bool zaliv,std::string busName,st
 
 }
 
-void MapRenderer::PrepareTextStop(svg::Text &temp, bool zaliv,std::string busName,std::string color,const MapSetting& tempSetting,const Stop stop,const Plane::SphereProjector &proj)
+void MapRenderer::PrepareTextStop(svg::Text &temp, bool zaliv,const string &busName,const string &color, const MapSetting& tempSetting, const Stop stop, const Plane::SphereProjector &proj)
 {
     temp.zaliv=zaliv;
     temp.SetData(busName);
@@ -268,24 +268,27 @@ void MapRenderer::PrepareTextStop(svg::Text &temp, bool zaliv,std::string busNam
 
 }
 
-void MapRenderer::PrintMap(string &str)
+std::string MapRenderer::PrintMap(string &str)
 {
+    std::string str_temp;
     for (auto c:str){
         if(c=='\"'){
-            cout<<'\\';
-            std::cout<<c;
+            str_temp+='\\';
+            str_temp+=c;
         }else
             if(c=='\\'){
-                cout<<'\\';
-                cout<<'\\';
-                std::cout<<c;
+                 str_temp+='\\';
+                 str_temp+='\\';
+                 str_temp+=c;
             }else
                 if(c=='\n'){
-                    std::cout<<'\\'<<'n';
+                     str_temp+='\\';
+                      str_temp+='n';
                 }else{
-                    std::cout<<c;
+                    str_temp+=c;
                 }
     }
+    return str;
 }
 
 void MapRenderer::PrepareTextCoordinatsNotRing(svg::Text &temp, const Bus &bus, const Plane::SphereProjector &proj, int lastStop, int stop_num)
