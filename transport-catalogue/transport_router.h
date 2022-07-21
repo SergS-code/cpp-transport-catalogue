@@ -28,7 +28,7 @@ public:
      graph::DirectedWeightedGraph<double>& ReturnGraf();
 
     void PrepareEdges(std::vector<graph::Edge<double>>& Edges,VertexId from,VertexId to,double weight);
-    void Rezult(size_t from, size_t to, double &total_time,std::vector<InfoToPrintRoute>& rez, graph::Router<double> &marshrut);
+    void Rezult(size_t from, size_t to, double &totalTime,std::vector<InfoToPrintRoute>& rez, graph::Router<double> &marshrut);
     void PrepareOneEdgeInfo(const std::string &busName, int spaunCount, double time, size_t from, size_t to);
     void PrepareStops();
 

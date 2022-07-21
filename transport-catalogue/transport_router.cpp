@@ -23,11 +23,11 @@ void TransportRouter::PrepareEdges(vector<graph::Edge<double>>& Edges,VertexId f
     Edges.push_back(temp);
 }
 
-void TransportRouter::Rezult(size_t from, size_t to , double &total_time, std::vector<InfoToPrintRoute> &rez, graph::Router<double>& marshrut )
+void TransportRouter::Rezult(size_t from, size_t to , double &totalTime, std::vector<InfoToPrintRoute> &rez, graph::Router<double>& marshrut )
 {
 
     if(marshrut.BuildRoute(from,to).has_value()){
-        total_time =marshrut.BuildRoute(from,to).value().weight;
+        totalTime =marshrut.BuildRoute(from,to).value().weight;
         auto vect=marshrut.BuildRoute(from,to).value().edges;
 
         for (size_t i=0;i<vect.size();++i)
@@ -42,7 +42,7 @@ void TransportRouter::Rezult(size_t from, size_t to , double &total_time, std::v
             tempW.time=RouterSet->GetRouterSetting().bus_wait_time;
             rez.push_back(tempW);
             InfoToPrintRoute tempB;
-            tempB.bus=InfoEdges.at({from,to}).name_bus;//
+            tempB.bus=InfoEdges.at({from,to}).name_bus;
             tempB.span_count=InfoEdges.at({from,to}).spaun_count;
             tempB.time=InfoEdges.at({from,to}).time;
             tempB.type="Bus";
@@ -72,9 +72,9 @@ void TransportRouter:: PrepareStops(){
 void TransportRouter::PrepareGraf()
 {
 
-    double bus_velocity=RouterSet->GetRouterSetting().bus_velocity;
-    double bus_wait_time=RouterSet->GetRouterSetting().bus_wait_time;
-    double speedMetrs=bus_velocity*1000/60;
+    double busVelocity=RouterSet->GetRouterSetting().bus_velocity;
+    double busWaitTime=RouterSet->GetRouterSetting().bus_wait_time;
+    double speedMetrs=busVelocity*1000/60;
     PrepareStops();
 
     for(const auto& bus: *Temp.GetBuses()){
@@ -91,7 +91,7 @@ void TransportRouter::PrepareGraf()
                     to=bus.busStop[j]->id;
                     if(from!=to){
                         distance+=Temp.GetDistance(bus.busStop[k],bus.busStop[k+1]);
-                        PrepareEdges(Edges, from, to, distance/speedMetrs + bus_wait_time);
+                        PrepareEdges(Edges, from, to, distance/speedMetrs + busWaitTime);
                         PrepareOneEdgeInfo(bus.name,spaunCount,distance/speedMetrs,from,to);
                         ++spaunCount;
                     }
@@ -110,7 +110,7 @@ void TransportRouter::PrepareGraf()
                     to=bus.busStop[j]->id;
                     if(from!=to){
                         distance+=Temp.GetDistance(bus.busStop[k],bus.busStop[k+1]);
-                        PrepareEdges(Edges,bus.busStop[i]->id,bus.busStop[j]->id, distance/speedMetrs +bus_wait_time);
+                        PrepareEdges(Edges,bus.busStop[i]->id,bus.busStop[j]->id, distance/speedMetrs +busWaitTime);
                         PrepareOneEdgeInfo(bus.name,spaunCount,distance/speedMetrs,from,to);
                         ++spaunCount;
                     }
@@ -128,7 +128,7 @@ void TransportRouter::PrepareGraf()
                     to=bus.busStop[j]->id;
                     if(from!=to){
                         distance+=Temp.GetDistance(bus.busStop[k],bus.busStop[k+1]);
-                        PrepareEdges(Edges,bus.busStop[i]->id,bus.busStop[j]->id, distance/speedMetrs + bus_wait_time);
+                        PrepareEdges(Edges,bus.busStop[i]->id,bus.busStop[j]->id, distance/speedMetrs + busWaitTime);
                         PrepareOneEdgeInfo(bus.name,spaunCount,distance/speedMetrs,from,to);
                         ++spaunCount;
                     }
