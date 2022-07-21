@@ -58,7 +58,7 @@ void TransportCatalogue::PrepareStopsWithBus()
 {
     for ( Bus& temp_bus: buses)
     {
-        for (auto& BussStop:temp_bus.busStop){
+        for (auto& BussStop:temp_bus.bus_stop){
             stop_wiht_bus[BussStop].insert(temp_bus.name);
         }
     }
@@ -92,12 +92,12 @@ Stats TransportCatalogue::GetBusInfo(std::string bus_name)
 
     else {
         std::unordered_set<Stop *> unique_stops;
-        stats.stops = static_cast<int>(busname_to_bus.at(bus_name)->busStop.size());
-        unique_stops.insert(busname_to_bus.at(bus_name)->busStop.begin(), busname_to_bus.at(bus_name)->busStop.end());
+        stats.stops = static_cast<int>(busname_to_bus.at(bus_name)->bus_stop.size());
+        unique_stops.insert(busname_to_bus.at(bus_name)->bus_stop.begin(), busname_to_bus.at(bus_name)->bus_stop.end());
         stats.unique_stops = static_cast<int>(unique_stops.size());
         double distance2=0;
 
-        for(auto to = busname_to_bus.at(bus_name)->busStop.begin(), from = to++;  to != busname_to_bus.at(bus_name)->busStop.end(); ++to, ++from) {
+        for(auto to = busname_to_bus.at(bus_name)->bus_stop.begin(), from = to++;  to != busname_to_bus.at(bus_name)->bus_stop.end(); ++to, ++from) {
             {
                 detail::distant::Coordinates A,B;
                 A.lat=(*from)->latitude;

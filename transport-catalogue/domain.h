@@ -29,7 +29,7 @@ using color=std::variant<std::string, std::array<int,3>,std::array<double,4>>;
 
 struct InfoEdge{
     std::string name_bus;
-    int spaun_count;
+    int span_count;
     double time;
 };
 
@@ -101,7 +101,7 @@ struct InfoToPrintRoute{
 
 struct Bus{
     std::string name;
-    std::vector<Stop*>busStop;
+    std::vector<Stop*>bus_stop;
     bool is_roundtrip;
 };
 struct MapSetting{

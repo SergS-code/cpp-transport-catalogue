@@ -23,11 +23,10 @@ int main(){
     Map.SetMapSetting(GetInf);
     GetInf.GetCatalog(A);
     GetInf.PrepareJson(std::cin);
-
-    TransportsCatalogue::TransportRouter Roud(A);
-    Roud.SetRouterSetting(GetInf);
-    Roud.PrepareGraf();
-    TransportsCatalogue::RequestHandler Manager(Map,GetInf,A,Roud);
+    TransportsCatalogue::TransportRouter Router(A);
+    Router.SetRouterSetting(GetInf);
+    Router.PrepareGraf();
+    TransportsCatalogue::RequestHandler Manager(Map,GetInf,A,Router);
     Manager.OutputResult();
     return 0;
 }

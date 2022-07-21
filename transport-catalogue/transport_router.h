@@ -27,19 +27,19 @@ public:
     void PrepareGraf();
      graph::DirectedWeightedGraph<double>& ReturnGraf();
 
-    void PrepareEdges(std::vector<graph::Edge<double>>& Edges,VertexId from,VertexId to,double weight);
-    void Rezult(size_t from, size_t to, double &totalTime,std::vector<InfoToPrintRoute>& rez, graph::Router<double> &marshrut);
-    void PrepareOneEdgeInfo(const std::string &busName, int spaunCount, double time, size_t from, size_t to);
+    void PrepareEdges(std::vector<graph::Edge<double>>& Edges, VertexId from, VertexId to, double weight);
+    void Rezult(size_t from, size_t to, double &total_time, std::vector<InfoToPrintRoute>& rez, graph::Router<double> &marshrut);
+    void PrepareOneEdgeInfo(const std::string &bus_came, int span_count, double time, size_t from, size_t to);
     void PrepareStops();
 
 private:
-    JsonReader *RouterSet;
+    JsonReader* RouterSet;
     TransportCatalogue& Temp;
     std::map<std::pair<size_t,size_t>,InfoEdge> InfoEdges;
     std::map<size_t,std::string> InfoStop;
 
     std::vector<graph::Edge<double>> Edges;
-    graph::DirectedWeightedGraph<double> Graff;
+    graph::DirectedWeightedGraph<double> Graph;
 
 };
 

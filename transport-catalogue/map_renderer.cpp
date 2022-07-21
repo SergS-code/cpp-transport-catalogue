@@ -85,7 +85,7 @@ std::string MapRenderer::GetMap()
 
     std::vector<Stop> stops;
     for (auto& bus: orderBus){
-        for(auto& stop : bus.busStop){
+        for(auto& stop : bus.bus_stop){
             if(!FindDuplicate(*stop,stops)){
                 stops.push_back(*stop);
             }
@@ -98,7 +98,7 @@ std::string MapRenderer::GetMap()
 
     for (auto& item: orderBus){
         int count=0;
-        for(auto& stopFromBus:item.busStop){
+        for(auto& stopFromBus:item.bus_stop){
             geo_coords.push_back(TransportsCatalogue::detail::distant::Coordinates(stopFromBus->latitude,stopFromBus->longitude));
             ++count;
         }
@@ -118,7 +118,7 @@ std::string MapRenderer::GetMap()
         FillPolyline(Marshrut,MapSet,clolorPaletIndex%tempSetting.color_palette.size(),color);
         busWithColor[bus.name]=color;
         bool dontAdd=true;
-        for(auto &stop: bus.busStop){
+        for(auto &stop: bus.bus_stop){
             dontAdd=false;
             const svg::Point screen_coord=proj(TransportsCatalogue::detail::distant::Coordinates(stop->latitude,stop->longitude));
             Marshrut.AddPoint(screen_coord);
@@ -169,7 +169,7 @@ void MapRenderer::FillText(svg::Document &doc, std::deque<Bus> &orderBus, const 
             MainPrepareText(text_2,doc,false,true,bus,proj,tempSetting);
 
         } else{
-            if(bus.busStop.operator[](0)->name!=bus.busStop.operator[](bus.busStop.size()/2)->name){
+            if(bus.bus_stop.operator[](0)->name!=bus.bus_stop.operator[](bus.bus_stop.size()/2)->name){
                 svg::Text text_1,text_2,text_3,text_4;
                 MainPrepareText(text_1,doc,true,true,bus,proj,tempSetting);
                 MainPrepareText(text_2,doc,false,true,bus,proj,tempSetting);
@@ -294,7 +294,7 @@ std::string MapRenderer::PrintMap(string &str)
 void MapRenderer::PrepareTextCoordinatsNotRing(svg::Text &temp, const Bus &bus, const Plane::SphereProjector &proj, int lastStop, int stop_num)
 {
 
-    for(auto &stop: bus.busStop){
+    for(auto &stop: bus.bus_stop){
         if(stop_num==lastStop){
             const svg::Point screen_coord=proj(TransportsCatalogue::detail::distant::Coordinates(stop->latitude,stop->longitude));
             temp.SetPosition(screen_coord);
@@ -319,7 +319,7 @@ void MapRenderer::MainPrepareText(svg::Text &temp, svg::Document &doc, bool zali
         }else{
             PrepareText(temp,zalivka,bus.name,busWithColor[bus.name],tempSetting);
         }
-        int lastStop=bus.busStop.size()/2;
+        int lastStop=bus.bus_stop.size()/2;
         PrepareTextCoordinatsNotRing(temp,bus,proj,lastStop,0);
 
     }
@@ -329,7 +329,7 @@ void MapRenderer::MainPrepareText(svg::Text &temp, svg::Document &doc, bool zali
 
 void MapRenderer::PrepareTextCoordinatsRing(svg::Text &temp, const Bus &bus, const Plane::SphereProjector &proj)
 {
-    for(auto &stop: bus.busStop){
+    for(auto &stop: bus.bus_stop){
         svg::Point screen_coord=proj(TransportsCatalogue::detail::distant::Coordinates(stop->latitude,stop->longitude));
         temp.SetPosition(screen_coord);
         break;

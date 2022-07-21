@@ -30,13 +30,13 @@ void JsonReader::GetInfoBus(const json::Node &Businf)
     for(auto& i: temp.at("stops").AsArray()){
         std:: string t= i.AsString();
         revers.push_front(t);
-        bus.busStop.push_back(Temp->FindStop(i.AsString()));
+        bus.bus_stop.push_back(Temp->FindStop(i.AsString()));
     }
     int i=0;
     if (!round_trip){
         for(auto& it:revers){
             if(i>0){
-                bus.busStop.push_back(Temp->FindStop(it));
+                bus.bus_stop.push_back(Temp->FindStop(it));
             }
             i++;
         }
