@@ -13,17 +13,24 @@
 #include <iomanip>
 #include <fstream>
 #include "json_builder.h"
+#include "transport_router.h"
+#include "graph.h"
+#include "router.h"
 
 
 namespace TransportsCatalogue {
 class RequestHandler {
 public:
-    RequestHandler( renderer::MapRenderer& Renderer, JsonReader &Requests, TransportCatalogue& Catalogue_);
+    RequestHandler( renderer::MapRenderer& Renderer, JsonReader &Requests,
+                    TransportCatalogue& Catalogue,TransportRouter& Router);
     void OutputResult();
 
 private:
      renderer::MapRenderer& Renderer_;
      JsonReader &Requests_;
      TransportCatalogue& Catalogue_;
+     TransportRouter& Router_;
+     graph::Router<double> marshrut;
+
 };
 }

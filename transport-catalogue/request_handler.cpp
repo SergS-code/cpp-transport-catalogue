@@ -2,10 +2,12 @@
 using namespace std;
 
 
-TransportsCatalogue::RequestHandler::RequestHandler(renderer::MapRenderer &Renderer,  TransportsCatalogue::JsonReader &Requests, TransportCatalogue &Catalogue)
-    :Renderer_(Renderer), Requests_(Requests),Catalogue_(Catalogue)
+TransportsCatalogue::RequestHandler::RequestHandler(renderer::MapRenderer &Renderer,  TransportsCatalogue::JsonReader &Requests, TransportCatalogue &Catalogue, TransportRouter &Router)
+    :Renderer_(Renderer), Requests_(Requests),Catalogue_(Catalogue),Router_(Router),marshrut(Router_.ReturnGraf())
 {
-
+    
+    
+    
 }
 
 void TransportsCatalogue::RequestHandler::OutputResult()
@@ -32,14 +34,14 @@ void TransportsCatalogue::RequestHandler::OutputResult()
                     tem["buses"]=busss;
                     tem["request_id"]=item.id;
                     arr.push_back(tem);
-
+                    
                 }else{
                     json::Dict tem;
                     tem["request_id"]=item.id;
                     tem["error_message"]="not found";
                     arr.push_back(tem);
                 }
-
+                
             }
             if(item.type=="Bus"){
                 Stats temp_info=Catalogue_.GetBusInfo(item.name);
@@ -48,7 +50,7 @@ void TransportsCatalogue::RequestHandler::OutputResult()
                     tem["request_id"]=item.id;
                     tem["error_message"]="not found";
                     arr.push_back(tem);
-
+                    
                 }else{
                     json::Dict tem;
                     tem["curvature"]=temp_info.route_length2;
@@ -57,9 +59,59 @@ void TransportsCatalogue::RequestHandler::OutputResult()
                     tem["stop_count"]=temp_info.stops;
                     tem["unique_stop_count"]=temp_info.unique_stops;
                     arr.push_back(tem);
-
+                    
                 }
-
+                
+            }
+            if(item.type=="Route"){
+                json::Dict items;
+                json::Array itemsIntoItems;
+                std::vector<InfoToPrintRoute> rez;
+                size_t from,to;
+                
+                from=Catalogue_.get_stopname_to_stop()->at(item.from)->id;
+                to=Catalogue_.get_stopname_to_stop()->at(item.to)->id;
+                double weit_total=0;
+                
+                Router_.Rezult(from,to,weit_total,rez,marshrut);
+                
+                if(from==to){
+                    items["items"]=itemsIntoItems;
+                    items["request_id"]=item.id;
+                    items["total_time"]=weit_total;
+                    arr.push_back(items);
+                    
+                }else if(rez.size()==0){
+                    std::string str;
+                    str="not found";
+                    items["error_message"]=str;
+                    items["request_id"]=item.id;
+                    arr.push_back(items);
+                }else{
+                    for (auto & infoIt : rez){
+                        if(infoIt.type=="Wait"){
+                            json::Dict info;
+                            info["stop_name"]=infoIt.stop_name;
+                            info["time"]=infoIt.time;
+                            info["type"]=infoIt.type;
+                            itemsIntoItems.push_back(info);
+                            
+                        }
+                        if(infoIt.type=="Bus"){
+                            json::Dict info;
+                            info["bus"]=infoIt.bus;
+                            info["span_count"]=infoIt.span_count;
+                            info["time"]=infoIt.time;
+                            info["type"]=infoIt.type;
+                            itemsIntoItems.push_back(info);
+                        }
+                    }
+                    
+                    items["items"]=itemsIntoItems;
+                    items["request_id"]=item.id;
+                    items["total_time"]=weit_total;
+                    arr.push_back(items);
+                }
             }
         }
         json::Print(
@@ -70,10 +122,10 @@ void TransportsCatalogue::RequestHandler::OutputResult()
                     },
                     cout
                     );
-
+        
     }
-
-
+    
+    
 }
 
 

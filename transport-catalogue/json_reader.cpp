@@ -72,6 +72,11 @@ void JsonReader::GetReqInf(const json::Node &ReqItem)
     item.type=temp.at("type").AsString();
     if(temp.count("name")!=0)
         item.name=temp.at("name").AsString();
+
+    if(temp.at("type").AsString()=="Route"){
+        item.from=temp.at("from").AsString();
+        item.to=temp.at("to").AsString();
+    }
     ReqInf.push_back(item);
 }
 void JsonReader::GetMapInfo(const json::Node &MapItem)
@@ -157,6 +162,13 @@ void JsonReader::GetMapInfo(const json::Node &MapItem)
 
 }
 
+void JsonReader::GetRouterInfo(const json::Node &RouterItem)
+{
+    json::Dict temp=RouterItem.AsMap();
+    Routerset.bus_velocity=temp.at("bus_velocity").AsDouble();
+    Routerset.bus_wait_time=temp.at("bus_wait_time").AsDouble();
+}
+
 void JsonReader::FillCatalogy()
 {
    // json::Node::Value temp= Doc.GetRoot().GetValue();
@@ -194,6 +206,11 @@ void JsonReader::FillCatalogy()
                 GetMapInfo(a.second);
             }
         }
+        if(a.first=="routing_settings"){
+            if(a.second.IsMap()){
+                GetRouterInfo(a.second);
+            }
+        }
     }
     Temp->PrepareStops();
     for (auto &item :requestBus ){
@@ -210,6 +227,13 @@ MapSetting& JsonReader::GetSetting()
 {
     return Mapset;
 }
+
+RoutingSettings &JsonReader::GetRouterSetting()
+{
+     return Routerset;
+}
+
+
 
 void JsonReader::PrintInfoStop(InfoToPrintStop item,std::string request_id)
 {

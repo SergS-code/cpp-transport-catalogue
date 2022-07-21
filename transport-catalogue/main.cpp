@@ -9,6 +9,9 @@
 #include "domain.h"
 #include <string>
 #include "map_renderer.h"
+#include "transport_router.h"
+#include "router.h"
+#include "graph.h"
 
 using namespace std;
 
@@ -20,7 +23,11 @@ int main(){
     Map.SetMapSetting(GetInf);
     GetInf.GetCatalog(A);
     GetInf.PrepareJson(std::cin);
-    TransportsCatalogue::RequestHandler Manager(Map,GetInf,A);
+
+    TransportsCatalogue::TransportRouter Roud(A);
+    Roud.SetRouterSetting(GetInf);
+    Roud.PrepareGraf();
+    TransportsCatalogue::RequestHandler Manager(Map,GetInf,A,Roud);
     Manager.OutputResult();
     return 0;
 }

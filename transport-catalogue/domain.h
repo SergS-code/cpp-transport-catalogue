@@ -27,13 +27,25 @@ namespace TransportsCatalogue {
 
 using color=std::variant<std::string, std::array<int,3>,std::array<double,4>>;
 
+struct InfoEdge{
+    std::string name_bus;
+    int spaun_count;
+    double time;
+};
+
+struct RoutingSettings{
+    int bus_wait_time;
+    double bus_velocity;
+};
 struct Stop{
+    size_t id;
     std::string name;
     double latitude;
     double longitude;
     svg::Point screen_coord;
     std::map<std::string,double> road_distances;
 };
+
 
 
 struct InfoToPrintStop{
@@ -74,6 +86,17 @@ struct StatRequest{
     int id;
     std::string type;
     std::string name;
+    std::string from;
+    std::string to;
+};
+
+struct InfoToPrintRoute{
+    int span_count;
+    double time;
+    std::string type;
+    std::string stop_name;
+    std::string bus;
+
 };
 
 struct Bus{
