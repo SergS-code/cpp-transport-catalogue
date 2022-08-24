@@ -1,0 +1,126 @@
+syntax = "proto3";
+
+package catalog;
+
+message InfoEdge{
+uint32 from=1;
+uint32 to=2;
+string name_bus=3;
+uint32 span_count=4;
+double time=5;
+}
+
+message InfoEdges{
+repeated InfoEdge infoE=1;
+}
+
+message InfoStop{
+uint32 id_s=1;
+string name_bus=2;
+
+}
+
+message Edge {
+    uint32 from = 1;
+    uint32 to = 2;
+    double weight = 3;
+}
+
+message InfoStops{
+repeated InfoStop infoS=1;
+}
+
+message RouteSettings {
+    int32 wait_time = 1;
+    double velocity = 2;
+}
+
+
+message Router {
+    RouteSettings routeSettings = 1;
+    InfoStops infoStops = 2;
+    InfoEdges infoEdges=3;
+    repeated Edge Edges=4;
+}
+
+
+message Point {
+    double x = 1;
+    double y = 2;
+}
+
+message Rgb {
+    uint32 r = 1;
+    uint32 g = 2;
+    uint32 b = 3;
+}
+
+message Rgba {
+    uint32 r = 1;
+    uint32 g = 2;
+    uint32 b = 3;
+    double o = 4;
+}
+
+message Color {
+ oneof color {
+      string string_color = 2;
+      Rgb rgb_color = 3;
+      Rgba rgba_color = 4;
+  }
+
+}
+
+message RenderSettings {
+     double width=1;
+     double height=2;
+
+    double padding = 3;
+
+    double line_width = 4;
+    double stop_radius = 5;
+
+    int32 bus_label_font_size = 6;
+    Point bus_label_offset = 7;
+
+    int32 stop_label_font_size = 8;
+    Point stop_label_offset = 9;
+
+    Color underlayer_color = 10;
+    double underlayer_width = 11;
+
+    repeated Color color_palette = 12;
+}
+
+message RoadDistances{
+    string  stop_name = 1;
+    double  distant = 2;
+}
+
+message  Stop {
+    uint32 id = 1;
+    string name = 2;
+    double lat = 3;
+    double long = 4;
+    repeated RoadDistances distant = 5;
+}
+
+
+ message Bus {
+    string name = 1;
+    repeated string stops = 2;
+    bool  is_round_trip = 3;
+}
+
+
+
+message TransportCatalogue {
+  repeated Bus buses = 1;
+  repeated Stop stops = 2;
+}
+message Data {
+  TransportCatalogue TR = 1;
+  Router R  = 2;
+  RenderSettings S=3;
+}
+

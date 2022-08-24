@@ -10,23 +10,23 @@ MapRenderer::MapRenderer( TransportCatalogue &db):Temp(db)
 
 }
 
-void MapRenderer::SetMapSetting(JsonReader &MapSet_)
+void MapRenderer::SetMapSetting(MapSetting MapSet_)
 {
-    MapSet=&MapSet_;
+    MapSet=MapSet_;
 }
 
-void MapRenderer::FillPolyline(svg::Polyline &Marshrut, TransportsCatalogue::JsonReader *MapSet, int clolorPaletIndex,string &color)
+void MapRenderer::FillPolyline(svg::Polyline &Marshrut, MapSetting MapSet, int clolorPaletIndex,string &color)
 {
-    MapSetting tempSet=MapSet->GetSetting();
+    MapSetting tempSet=MapSet;
     Marshrut.GetFill()="none";
-    if(std::holds_alternative<std::string>(MapSet->GetSetting().color_palette[clolorPaletIndex])){
-        Marshrut.GetStroke()=std::get<std::string>(MapSet->GetSetting().color_palette[clolorPaletIndex]);
+    if(std::holds_alternative<std::string>(MapSet.color_palette[clolorPaletIndex])){
+        Marshrut.GetStroke()=std::get<std::string>(MapSet.color_palette[clolorPaletIndex]);
     }
 
-    if(std::holds_alternative<std::array<int,3>>(MapSet->GetSetting().color_palette[clolorPaletIndex])){
+    if(std::holds_alternative<std::array<int,3>>(MapSet.color_palette[clolorPaletIndex])){
         std::string str="rgb(";
         int i=0;
-        for (auto& color: std::get<std::array<int,3>>(MapSet->GetSetting().color_palette[clolorPaletIndex])){
+        for (auto& color: std::get<std::array<int,3>>(MapSet.color_palette[clolorPaletIndex])){
             if(i!=0){
                 str+=",";
             }
@@ -36,10 +36,10 @@ void MapRenderer::FillPolyline(svg::Polyline &Marshrut, TransportsCatalogue::Jso
         str+=")";
         Marshrut.GetStroke()=str;
     }
-    if(std::holds_alternative<std::array<double,4>>(MapSet->GetSetting().color_palette[clolorPaletIndex])){
+    if(std::holds_alternative<std::array<double,4>>(MapSet.color_palette[clolorPaletIndex])){
         std::string str="rgba(";
         int i=0;
-        for (auto& color: std::get<std::array<double,4>>(MapSet->GetSetting().color_palette[clolorPaletIndex])){
+        for (auto& color: std::get<std::array<double,4>>(MapSet.color_palette[clolorPaletIndex])){
             if(i!=0){
                 str+=",";
             }
@@ -55,7 +55,7 @@ void MapRenderer::FillPolyline(svg::Polyline &Marshrut, TransportsCatalogue::Jso
     }
     color=Marshrut.GetStroke();
     std::ostringstream strs;
-    strs << MapSet->GetSetting().line_width;
+    strs << MapSet.line_width;
     Marshrut.GetStroke_width()=strs.str();
     Marshrut.GetStroke_linecap()="round";
     Marshrut.GetStroke_linejoin()="round";
@@ -64,7 +64,7 @@ void MapRenderer::FillPolyline(svg::Polyline &Marshrut, TransportsCatalogue::Jso
 
 std::string MapRenderer::GetMap()
 {
-    MapSetting tempSetting=MapSet->GetSetting();
+    MapSetting tempSetting=MapSet;
     const double WIDTH = tempSetting.width;
     const double HEIGHT =tempSetting.height;
     const double PADDING =tempSetting.padding;
@@ -152,8 +152,8 @@ void MapRenderer::FillTextStop(std::vector<Stop>&stops, svg::Document &doc,const
     for(auto& stop:stops){
         svg::Text text_1;
         svg::Text text_2;
-        PrepareTextStop(text_1,true,stop.name,GetColor(MapSet->GetSetting()),MapSet->GetSetting(),stop,proj);
-        PrepareTextStop(text_2,false,stop.name,"black",MapSet->GetSetting(),stop,proj);
+        PrepareTextStop(text_1,true,stop.name,GetColor(MapSet),MapSet,stop,proj);
+        PrepareTextStop(text_2,false,stop.name,"black",MapSet,stop,proj);
         doc.Add(text_1);
         doc.Add(text_2);
     }
@@ -161,7 +161,7 @@ void MapRenderer::FillTextStop(std::vector<Stop>&stops, svg::Document &doc,const
 }
 void MapRenderer::FillText(svg::Document &doc, std::deque<Bus> &orderBus, const Plane::SphereProjector &proj)
 {
-    MapSetting tempSetting=MapSet->GetSetting();
+    MapSetting tempSetting=MapSet;
     for (auto& bus: orderBus){ // true и false обозначает разницу подложка это или  надпись . вторая bool Ring or not
         if(bus.is_roundtrip==true ){
             svg::Text text_1,text_2;
@@ -185,7 +185,7 @@ void MapRenderer::FillText(svg::Document &doc, std::deque<Bus> &orderBus, const 
 }
 void MapRenderer::FillCircle(std::vector<Stop>&stops, svg::Document &doc,  const Plane::SphereProjector &proj)const
 {
-    MapSetting tempSetting=MapSet->GetSetting();
+    MapSetting tempSetting=MapSet;
     for(auto& stop :stops){
         svg::Circle Point;
         Point.SetRadius(tempSetting.stop_radius);

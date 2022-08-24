@@ -2,9 +2,16 @@
 #include <iostream>
 #include "json.h"
 #include "domain.h"
-#include "transport_catalogue.h"
 #include <array>
 #include <list>
+
+
+#include "json_builder.h"
+#include "map_renderer.h"
+#include "serialization.h"
+#include "transport_catalogue.h"
+#include "transport_router.h"
+
 
 namespace TransportsCatalogue {
 class JsonReader{
@@ -13,6 +20,7 @@ public:
     }
     void PrepareJson(std::istream &streamDate);
     void GetCatalog(TransportCatalogue& primary);
+    void GetSeriliz(Serializator &primary);
     void GetInfoBus(const json::Node &Businf);
     void GetInfoStop(const json::Node &Stop);
     void GetReqInf(const json::Node &ReqItem);
@@ -33,6 +41,7 @@ private:
     MapSetting Mapset;
     RoutingSettings Routerset;
     TransportCatalogue* Temp;
+    Serializator* Seriliz;
 
 };
 

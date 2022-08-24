@@ -11,9 +11,9 @@ TransportRouter::TransportRouter(TransportCatalogue &db):Temp(db){
 
 }
 
-void TransportRouter::SetRouterSetting(JsonReader &RouterSet_)
+void TransportRouter::SetRouterSetting(RoutingSettings RouterSet_)
 {
-    RouterSet=&RouterSet_;
+    RouterSet=RouterSet_;
 }
 void TransportRouter::PrepareEdges(vector<graph::Edge<double>>& Edges,VertexId from,VertexId to,double weight){
     graph::Edge<double>temp;
@@ -39,7 +39,7 @@ void TransportRouter::Rezult(size_t from, size_t to , double &total_time, std::v
             InfoToPrintRoute temp_wait;
             temp_wait.type="Wait";
             temp_wait.stop_name=InfoStop.at(from);
-            temp_wait.time=RouterSet->GetRouterSetting().bus_wait_time;
+            temp_wait.time=RouterSet.bus_wait_time;
             rez.push_back(temp_wait);
             InfoToPrintRoute temp_bus;
             temp_bus.bus=InfoEdges.at({from,to}).name_bus;
@@ -72,8 +72,8 @@ void TransportRouter::PrepareStops(){
 void TransportRouter::PrepareGraf()
 {
 
-    double bus_velocity=RouterSet->GetRouterSetting().bus_velocity;
-    double bus_wait_time=RouterSet->GetRouterSetting().bus_wait_time;
+    double bus_velocity=RouterSet.bus_velocity;
+    double bus_wait_time=RouterSet.bus_wait_time;
     double speed_metrs=bus_velocity*1000/60;
     PrepareStops();
 
@@ -145,6 +145,26 @@ void TransportRouter::PrepareGraf()
 
 graph::DirectedWeightedGraph<double> &TransportRouter::ReturnGraf()
 {
+    return Graph;
+}
+
+RoutingSettings &TransportRouter::GetRoutingSettings(){
+    return RouterSet;
+}
+
+std::map<std::pair<size_t, size_t>, InfoEdge> &TransportRouter::GetInfoEdges(){
+    return InfoEdges;
+}
+
+std::map<size_t, string> &TransportRouter::GetInfoStop(){
+    return InfoStop;
+}
+
+std::vector<graph::Edge<double> > &TransportRouter::GetEdges(){
+    return Edges;
+}
+
+graph::DirectedWeightedGraph<double> &TransportRouter::GetGraph(){
     return Graph;
 }
 }

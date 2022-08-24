@@ -8,7 +8,6 @@
 #include <optional>
 #include <vector>
 #include "transport_catalogue.h"
-#include "json_reader.h"
 #include <limits>
 #include <iomanip>
 #include <fstream>
@@ -93,8 +92,8 @@ namespace renderer {
 class MapRenderer{
 public:
     MapRenderer(TransportCatalogue &db);
-    void SetMapSetting(JsonReader &MapSer_);
-    void FillPolyline(svg::Polyline &Marshrut, JsonReader *MapSet, int clolorPaletIndex, std::string &color);
+    void SetMapSetting(MapSetting MapSer_);
+    void FillPolyline(svg::Polyline &Marshrut, MapSetting MapSet, int clolorPaletIndex, std::string &color);
     std::string GetMap();
     void FillText(svg::Document& doc, std::deque<Bus>& orderBus, const TransportsCatalogue::Plane::SphereProjector& proj);
     void FillCircle(std::vector<Stop>&stops, svg::Document &doc, const Plane::SphereProjector &proj) const ;
@@ -111,7 +110,7 @@ public:
 private:
     // RequestHandler использует агрегацию объектов "Транспортный Справочник" и "Визуализатор Карты"
      TransportCatalogue& Temp;
-     JsonReader *MapSet;
+     MapSetting MapSet;
      std::map<std::string,std::string> busWithColor;
 
 
